@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
 
 @Component
-class OutboxTransactionEventPublisher(val repository: OutboxEventRepository) : TransactionalEventPublisher {
+class OutboxTransactionEventPublisher(private val repository: OutboxEventRepository) : TransactionalEventPublisher {
 
     @Transactional
     override fun publish(transactionalEvent: TransactionalEvent) {
