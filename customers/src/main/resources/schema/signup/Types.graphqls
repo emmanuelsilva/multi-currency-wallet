@@ -1,0 +1,5 @@
+type CustomerRegistered {
+    id: UUID!
+}
+
+union SignUpOutput = CustomerRegistered
