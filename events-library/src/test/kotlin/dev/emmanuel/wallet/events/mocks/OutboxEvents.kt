@@ -1,6 +1,8 @@
 package dev.emmanuel.wallet.events.mocks
 
 import dev.emmanuel.wallet.events.domain.entity.PendingOutboxEvent
+import dev.emmanuel.wallet.events.domain.entity.PublishedOutboxEvent
+import java.time.Instant
 import java.util.*
 
 object OutboxEvents {
@@ -21,6 +23,26 @@ object OutboxEvents {
         event = event,
         payload = payload,
         retryCount = retryCount
+    )
+
+    fun givenPublishedOutboxEvent(
+        id: UUID? = UUID.randomUUID(),
+        topic: String = "test.topic",
+        idempotentKey: String = "test.idempotent.key",
+        key: String = "test.key",
+        event: String = "test.event",
+        payload: Map<String, Any> = mapOf("test.outbox" to "test.value"),
+        retryCount: Int = 1,
+        publishedAt: Instant = Instant.now(),
+    ) = PublishedOutboxEvent(
+        id = id,
+        topic = topic,
+        idempotentKey = idempotentKey,
+        key = key,
+        event = event,
+        payload = payload,
+        retryCount = retryCount,
+        publishedAt = publishedAt
     )
 
 }

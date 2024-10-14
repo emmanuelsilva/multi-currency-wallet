@@ -1,6 +1,5 @@
 package dev.emmanuel.wallet.events.infrastructure.event.kafka
 
-import dev.emmanuel.wallet.events.domain.entity.ApplicationEvent
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
