@@ -1,13 +1,12 @@
 package dev.emmanuel.wallet.events.infrastructure.event.kafka
 
 import dev.emmanuel.wallet.events.domain.entity.Event
+import org.assertj.core.api.Assertions.assertThat
+import org.awaitility.Awaitility.await
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.test.context.DynamicPropertyRegistry
-import org.springframework.test.context.DynamicPropertySource
-import org.testcontainers.junit.jupiter.Container
-import org.testcontainers.kafka.KafkaContainer
-import org.testcontainers.utility.DockerImageName
+import java.time.Duration
+import java.util.concurrent.TimeUnit
 
 class KafkaEventPublisherTest : WithKafkaContainerTest() {
 
@@ -15,30 +14,42 @@ class KafkaEventPublisherTest : WithKafkaContainerTest() {
     private lateinit var kafkaEventPublisher: KafkaEventPublisher
 
     @Test
-    fun `should publish an event to Kafka`() {
-        val payload = mapOf(
-            "event" to "test"
-        )
-
+    fun `should publish an event with key to Kafka`() {
         val event = Event(
-            topic = "my.topic",
+            topic = "my.key.topic",
             key = "test-key",
-            payload = payload
+            payload = mapOf("event" to "test")
         )
 
         kafkaEventPublisher.publish(event)
+
+        consumingMessagesFromTopic("my.key.topic")
+
+        await()
+            .pollInterval(Duration.ofMillis(100))
+            .atMost(10, TimeUnit.SECONDS)
+            .untilAsserted {
+                assertThat(receivedMessages()).containsExactly(event)
+            }
     }
 
-    companion object {
+    @Test
+    fun `should publish an event without key to Kafka`() {
+        val event = Event(
+            topic = "my.topic",
+            key = null,
+            payload = mapOf("event" to "test")
+        )
 
-        @Container
-        private val kafkaContainer = KafkaContainer(DockerImageName.parse("apache/kafka-native:3.8.0"))
+        kafkaEventPublisher.publish(event)
 
-        @JvmStatic
-        @DynamicPropertySource
-        fun kafkaProperties(registry: DynamicPropertyRegistry) {
-            kafkaContainer.start()
-            registry.add("spring.kafka.bootstrap-servers") { kafkaContainer.bootstrapServers }
-        }
+        consumingMessagesFromTopic("my.topic")
+
+        await()
+            .pollInterval(Duration.ofMillis(100))
+            .atMost(10, TimeUnit.SECONDS)
+            .untilAsserted {
+                assertThat(receivedMessages()).containsExactly(event)
+            }
     }
 }

@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component
 
 @Component
 class OutboxEventTask(
-    val publishPendingOutboxEvents: PublishPendingOutboxEvents
+    private val publishPendingOutboxEvents: PublishPendingOutboxEvents
 ) {
     @Scheduled(cron = "*/5 * * * * *")
     @SchedulerLock(name = "publishPendingOutboxEventsTask")

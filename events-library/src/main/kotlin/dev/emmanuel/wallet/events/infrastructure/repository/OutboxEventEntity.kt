@@ -78,7 +78,9 @@ data class OutboxEventEntity(
             event = failedEvent.event,
             payload = failedEvent.payload,
             status = failedEvent.status,
-            retryCount = failedEvent.retryCount
+            retryCount = failedEvent.retryCount,
+            failedAt = failedEvent.failedAt,
+            failedReason = failedEvent.failedReason
         )
 
         private fun buildEntityFromPendingEvent(pendingEvent: PendingOutboxEvent) = OutboxEventEntity(
