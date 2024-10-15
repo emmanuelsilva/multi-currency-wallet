@@ -14,6 +14,7 @@ import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
 import org.testcontainers.kafka.KafkaContainer
 import org.testcontainers.utility.DockerImageName
+import java.time.Duration
 import java.util.*
 
 @SpringBootTest(
@@ -41,20 +42,22 @@ class WithKafkaContainerTest {
         val consumer = KafkaConsumer(consumerProps, StringDeserializer(), JsonDeserializer(Map::class.java) )
         consumer.subscribe(listOf(*topics))
 
-        Thread.startVirtualThread {
-            while (true) {
-                val records = consumer.poll(java.time.Duration.ofMillis(100))
+        consumeMessageInBackground(consumer)
+    }
 
-                val receivedEvents = records.map {
-                    Event(
-                        topic = it.topic(),
-                        key = it.key(),
-                        payload = it.value()
-                    )
-                }
+    private fun consumeMessageInBackground(consumer: KafkaConsumer<String, Map<*, *>>) = Thread.startVirtualThread {
+        while (true) {
+            val records = consumer.poll(Duration.ofMillis(100))
 
-                receivedMessages.addAll(receivedEvents)
+            val receivedEvents = records.map {
+                Event(
+                    topic = it.topic(),
+                    key = it.key(),
+                    payload = it.value()
+                )
             }
+
+            receivedMessages.addAll(receivedEvents)
         }
     }
 
