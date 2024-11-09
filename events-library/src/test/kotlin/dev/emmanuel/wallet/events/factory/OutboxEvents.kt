@@ -1,4 +1,4 @@
-package dev.emmanuel.wallet.events.mocks
+package dev.emmanuel.wallet.events.factory
 
 import dev.emmanuel.wallet.events.domain.entity.FailedOutboxEvent
 import dev.emmanuel.wallet.events.domain.entity.PendingOutboxEvent

@@ -4,7 +4,7 @@ import dev.emmanuel.wallet.events.domain.entity.FailedOutboxEvent
 import dev.emmanuel.wallet.events.domain.entity.OutboxEventStatus
 import dev.emmanuel.wallet.events.domain.entity.PendingOutboxEvent
 import dev.emmanuel.wallet.events.domain.entity.PublishedOutboxEvent
-import dev.emmanuel.wallet.events.mocks.OutboxEvents
+import dev.emmanuel.wallet.events.factory.OutboxEvents
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import java.time.Instant

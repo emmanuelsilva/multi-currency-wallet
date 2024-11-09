@@ -1,6 +1,6 @@
 package dev.emmanuel.wallet.customers.domain.event
 
-import dev.emmanuel.wallet.customers.mocks.Customers
+import dev.emmanuel.wallet.customers.factory.Customers
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 

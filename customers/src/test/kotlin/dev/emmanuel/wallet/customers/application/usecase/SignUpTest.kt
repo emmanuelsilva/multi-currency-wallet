@@ -8,7 +8,7 @@ import dev.emmanuel.wallet.customers.domain.entity.Email
 import dev.emmanuel.wallet.customers.domain.entity.FullName
 import dev.emmanuel.wallet.customers.domain.entity.NewCustomer
 import dev.emmanuel.wallet.customers.domain.event.CustomerSignedUp
-import dev.emmanuel.wallet.customers.mocks.Customers
+import dev.emmanuel.wallet.customers.factory.Customers
 import dev.emmanuel.wallet.events.application.event.TransactionalEventPublisher
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs

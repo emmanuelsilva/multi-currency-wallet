@@ -1,4 +1,4 @@
-package dev.emmanuel.wallet.customers.mocks
+package dev.emmanuel.wallet.customers.factory
 
 import dev.emmanuel.wallet.customers.domain.entity.Customer
 import dev.emmanuel.wallet.customers.domain.entity.CustomerID

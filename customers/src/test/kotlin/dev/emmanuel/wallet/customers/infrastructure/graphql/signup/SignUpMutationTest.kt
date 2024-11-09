@@ -7,7 +7,7 @@ import dev.emmanuel.wallet.customers.domain.entity.Email
 import dev.emmanuel.wallet.customers.domain.entity.FullName
 import dev.emmanuel.wallet.customers.domain.entity.NewCustomer
 import dev.emmanuel.wallet.customers.infrastructure.graphql.WithGraphQLTest
-import dev.emmanuel.wallet.customers.mocks.Customers
+import dev.emmanuel.wallet.customers.factory.Customers
 import io.mockk.every
 import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat

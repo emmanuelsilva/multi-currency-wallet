@@ -7,7 +7,7 @@ import dev.emmanuel.wallet.events.domain.entity.Event
 import dev.emmanuel.wallet.events.domain.entity.FailedOutboxEvent
 import dev.emmanuel.wallet.events.domain.entity.PendingOutboxEvent
 import dev.emmanuel.wallet.events.domain.entity.PublishedOutboxEvent
-import dev.emmanuel.wallet.events.mocks.OutboxEvents
+import dev.emmanuel.wallet.events.factory.OutboxEvents
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.RelaxedMockK

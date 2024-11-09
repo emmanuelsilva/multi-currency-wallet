@@ -1,13 +1,11 @@
 package dev.emmanuel.wallet.events.infrastructure.repository
 
 import dev.emmanuel.wallet.events.domain.entity.PendingOutboxEvent
-import dev.emmanuel.wallet.events.domain.entity.PublishedOutboxEvent
-import dev.emmanuel.wallet.events.mocks.OutboxEvents
+import dev.emmanuel.wallet.events.factory.OutboxEvents
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Import
-import java.time.Instant
 
 @Import(value = [OutboxEventJdbcRepositoryAdapter::class])
 class OutboxEventJdbcRepositoryAdapterTest : WithRepositoryTest() {
