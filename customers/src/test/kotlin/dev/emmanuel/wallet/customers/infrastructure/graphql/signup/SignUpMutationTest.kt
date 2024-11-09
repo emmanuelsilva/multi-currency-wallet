@@ -3,9 +3,11 @@ package dev.emmanuel.wallet.customers.infrastructure.graphql.signup
 import com.ninjasquad.springmockk.MockkBean
 import dev.emmanuel.wallet.common.domain.exception.DomainException
 import dev.emmanuel.wallet.customers.application.usecase.SignUp
+import dev.emmanuel.wallet.customers.application.usecase.SignUpRequest
 import dev.emmanuel.wallet.customers.domain.entity.Email
 import dev.emmanuel.wallet.customers.domain.entity.FullName
 import dev.emmanuel.wallet.customers.domain.entity.NewCustomer
+import dev.emmanuel.wallet.customers.domain.entity.Password
 import dev.emmanuel.wallet.customers.infrastructure.graphql.WithGraphQLTest
 import dev.emmanuel.wallet.customers.factory.Customers
 import io.mockk.every
@@ -31,7 +33,7 @@ internal class SignUpMutationTest : WithGraphQLTest() {
             signUp(input: {
               fullName: "Emmanuel Silva",
               email: "emmanuel@dev.com",
-              password: "password"
+              password: "pass123@Strong!"
             }) {
               ...on CustomerRegistered {
                 id
@@ -48,10 +50,14 @@ internal class SignUpMutationTest : WithGraphQLTest() {
 
         verify {
             signUp.execute(
-                NewCustomer(
-                    fullName = FullName("Emmanuel Silva"),
-                    email = Email("emmanuel@dev.com")
+                SignUpRequest(
+                    newCustomer = NewCustomer(
+                        fullName = FullName("Emmanuel Silva"),
+                        email = Email("emmanuel@dev.com"),
+                    ),
+                    password = Password("pass123@Strong!")
                 )
+
             )
         }
     }
@@ -63,7 +69,7 @@ internal class SignUpMutationTest : WithGraphQLTest() {
             signUp(input: {
               fullName: "",
               email: "invalid",
-              password: "password"
+              password: "pass123@Strong!"
             }) {
               ...on CustomerRegistered {
                 id
@@ -87,7 +93,7 @@ internal class SignUpMutationTest : WithGraphQLTest() {
             signUp(input: {
               fullName: "Full Name",
               email: "invalid",
-              password: "password"
+              password: "pass123@Strong!"
             }) {
               ...on CustomerRegistered {
                 id
@@ -109,7 +115,7 @@ internal class SignUpMutationTest : WithGraphQLTest() {
             signUp(input: {
               fullName: "Full Name",
               email: "mock@email.com",
-              password: "password"
+              password: "pass123@Strong!"
             }) {
               ...on CustomerRegistered {
                 id

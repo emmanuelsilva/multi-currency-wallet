@@ -11,6 +11,8 @@ value class FullName(val value: String) : WithValidation<FullName> {
         validate(this)
     }
 
+    override fun toString() = value
+
     override fun validationDefinition() = Validation {
         FullName::value {
             addConstraint("Full name must not be blank") { it.isNotBlank() }

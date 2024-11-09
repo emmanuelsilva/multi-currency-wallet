@@ -10,6 +10,8 @@ value class Email(val value: String) : WithValidation<Email> {
         validate(this)
     }
 
+    override fun toString() = value
+
     override fun validationDefinition() = Validation {
         Email::value {
             addConstraint("Email must not be blank") { it.isNotBlank() }
