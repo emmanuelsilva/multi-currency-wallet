@@ -2,11 +2,10 @@ package dev.emmanuel.wallet.customers.application.usecase
 
 import dev.emmanuel.wallet.WithMockExtension
 import dev.emmanuel.wallet.common.domain.exception.DomainException
+import dev.emmanuel.wallet.customers.application.gateway.CreateIdentityProvider
+import dev.emmanuel.wallet.customers.application.gateway.CreateIdentityProviderRequest
 import dev.emmanuel.wallet.customers.application.repository.CustomerRepository
-import dev.emmanuel.wallet.customers.domain.entity.Customer
-import dev.emmanuel.wallet.customers.domain.entity.Email
-import dev.emmanuel.wallet.customers.domain.entity.FullName
-import dev.emmanuel.wallet.customers.domain.entity.NewCustomer
+import dev.emmanuel.wallet.customers.domain.entity.*
 import dev.emmanuel.wallet.customers.domain.event.CustomerSignedUp
 import dev.emmanuel.wallet.customers.factory.Customers
 import dev.emmanuel.wallet.events.application.event.TransactionalEventPublisher
@@ -27,22 +26,32 @@ internal class SignUpTest : WithMockExtension {
     @RelaxedMockK
     private lateinit var transactionalEventPublisher: TransactionalEventPublisher
 
+    @RelaxedMockK
+    private lateinit var createIdentityProvider: CreateIdentityProvider
+
     @InjectMockKs
     private lateinit var signUp: SignUp
 
     @Test
-    fun `should save and publish signed up event when a valid new customer was provided`() {
+    fun `should save customer, create identity and publish signed up event when a valid new customer was provided`() {
         val email = "email@example.com"
         givenNonExistingEmailOnDatabase(email)
 
         val customer = givenSavedCustomer()
         val newCustomer = givenNewCustomer(email)
+        val password = Password("Super@Password02")
 
-        val savedCustomer = signUp.execute(newCustomer)
+        val request = SignUpRequest(
+            newCustomer = newCustomer,
+            password = password
+        )
+
+        val savedCustomer = signUp.execute(request)
 
         assertThatFindByEmailWasCalled(newCustomer)
         assertThatNewCustomerWasSaved(newCustomer)
         assertThat(savedCustomer).isEqualTo(customer)
+        assertThatIdentityWasCreated(customer, password)
         assertCustomerSignedUpEventWasPublished(savedCustomer)
     }
 
@@ -50,13 +59,43 @@ internal class SignUpTest : WithMockExtension {
     fun `should return an DomainException when email already exists on database`() {
         val email = "email@example.com"
         givenExistingCustomer(email)
-        val newCustomer = givenNewCustomer(email)
 
-        assertThatThrownBy { signUp.execute(newCustomer) }
+        val newCustomer = givenNewCustomer(email)
+        val password = Password("Super@Password02")
+
+        val request = SignUpRequest(
+            newCustomer = newCustomer,
+            password = password
+        )
+
+        assertThatThrownBy { signUp.execute(request) }
             .isInstanceOf(DomainException::class.java)
             .hasMessage("The given email address already exists")
 
         assertThatCustomerWasNotSaved(newCustomer)
+        assertCustomerSignedUpEventWasNotPublished()
+    }
+
+    @Test
+    fun `should return an error when failed to create identity`() {
+        val email = "email@example.com"
+        givenNonExistingEmailOnDatabase(email)
+        givenSavedCustomer()
+        every { createIdentityProvider.create(any()) } throws RuntimeException("Failed to create provider identity")
+
+        val newCustomer = givenNewCustomer(email)
+        val password = Password("Super@Password02")
+
+        val request = SignUpRequest(
+            newCustomer = newCustomer,
+            password = password
+        )
+
+        assertThatThrownBy { signUp.execute(request) }
+            .isInstanceOf(RuntimeException::class.java)
+            .hasMessage("Failed to create provider identity")
+
+        assertCustomerSignedUpEventWasNotPublished()
     }
 
     @Test
@@ -66,12 +105,18 @@ internal class SignUpTest : WithMockExtension {
         every { repository.save(any()) } throws RuntimeException("Failed to save")
 
         val newCustomer = givenNewCustomer(email)
+        val password = Password("Super@Password02")
 
-        assertThatThrownBy { signUp.execute(newCustomer) }
+        val request = SignUpRequest(
+            newCustomer = newCustomer,
+            password = password
+        )
+
+        assertThatThrownBy { signUp.execute(request) }
             .isInstanceOf(RuntimeException::class.java)
             .hasMessage("Failed to save")
 
-        verify(exactly = 0) { transactionalEventPublisher.publish(any()) }
+        assertCustomerSignedUpEventWasNotPublished()
     }
 
     @Test
@@ -82,8 +127,14 @@ internal class SignUpTest : WithMockExtension {
 
         givenSavedCustomer()
         val newCustomer = givenNewCustomer(email)
+        val password = Password("Super@Password02")
 
-        assertThatThrownBy { signUp.execute(newCustomer) }
+        val request = SignUpRequest(
+            newCustomer = newCustomer,
+            password = password
+        )
+
+        assertThatThrownBy { signUp.execute(request) }
             .isInstanceOf(RuntimeException::class.java)
             .hasMessage("Failed to publish event")
     }
@@ -102,7 +153,7 @@ internal class SignUpTest : WithMockExtension {
 
     private fun givenNewCustomer(email: String) = NewCustomer(
         fullName = FullName("Sample Customer"),
-        email = Email(email)
+        email = Email(email),
     )
 
     private fun givenSavedCustomer() : Customer {
@@ -123,5 +174,20 @@ internal class SignUpTest : WithMockExtension {
 
     private fun assertThatCustomerWasNotSaved(newCustomer: NewCustomer) {
         verify(exactly = 0) { repository.save(newCustomer) }
+    }
+
+    private fun assertCustomerSignedUpEventWasNotPublished() {
+        verify(exactly = 0) { transactionalEventPublisher.publish(any()) }
+    }
+
+    private fun assertThatIdentityWasCreated(customer: Customer, password: Password) {
+        verify {
+            createIdentityProvider.create(
+                CreateIdentityProviderRequest(
+                    customer = customer,
+                    password = password
+                )
+            )
+        }
     }
 }

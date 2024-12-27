@@ -7,7 +7,7 @@ import org.springframework.data.relational.core.mapping.Table
 import java.time.Instant
 import java.util.*
 
-@Table(name = "customers", schema = "customers")
+@Table(name = "customers")
 data class CustomerEntity(
     @Id val id: UUID? = null,
     @Column("full_name") val fullName: FullName,
