@@ -2,7 +2,7 @@ package dev.emmanuel.wallet.customers.application.usecase
 
 import dev.emmanuel.wallet.WithMockExtension
 import dev.emmanuel.wallet.common.domain.exception.DomainException
-import dev.emmanuel.wallet.customers.application.gateway.IdentityProviderCreator
+import dev.emmanuel.wallet.customers.application.gateway.CreateIdentityProvider
 import dev.emmanuel.wallet.customers.application.gateway.CreateIdentityProviderRequest
 import dev.emmanuel.wallet.customers.application.repository.CustomerRepository
 import dev.emmanuel.wallet.customers.domain.entity.*
@@ -27,7 +27,7 @@ internal class SignUpTest : WithMockExtension {
     private lateinit var transactionalEventPublisher: TransactionalEventPublisher
 
     @RelaxedMockK
-    private lateinit var identityProviderCreator: IdentityProviderCreator
+    private lateinit var createIdentityProvider: CreateIdentityProvider
 
     @InjectMockKs
     private lateinit var signUp: SignUp
@@ -81,7 +81,7 @@ internal class SignUpTest : WithMockExtension {
         val email = "email@example.com"
         givenNonExistingEmailOnDatabase(email)
         givenSavedCustomer()
-        every { identityProviderCreator.create(any()) } throws RuntimeException("Failed to create provider identity")
+        every { createIdentityProvider.create(any()) } throws RuntimeException("Failed to create provider identity")
 
         val newCustomer = givenNewCustomer(email)
         val password = Password("Super@Password02")
@@ -182,7 +182,7 @@ internal class SignUpTest : WithMockExtension {
 
     private fun assertThatIdentityWasCreated(customer: Customer, password: Password) {
         verify {
-            identityProviderCreator.create(
+            createIdentityProvider.create(
                 CreateIdentityProviderRequest(
                     customer = customer,
                     password = password

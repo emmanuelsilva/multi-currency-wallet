@@ -7,6 +7,6 @@ import org.springframework.context.annotation.Configuration
 data class Auth0Configuration(
     @Value("\${auth0.domain}") val domain: String,
     @Value("\${auth0.api.endpoint}") val apiEndpoint: String,
-    @Value("\${okta.oauth2.client-id}") val clientId: String,
-    @Value("\${okta.oauth2.client-secret}") val clientSecret: String
+    @Value("\${AUTH0.CLIENT.ID}") val clientId: String,
+    @Value("\${AUTH0.CLIENT.SECRET}") val clientSecret: String
 )

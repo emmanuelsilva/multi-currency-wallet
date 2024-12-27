@@ -2,7 +2,7 @@ package dev.emmanuel.wallet.customers.application.usecase
 
 import dev.emmanuel.wallet.common.application.usecase.TransactionalUseCase
 import dev.emmanuel.wallet.common.domain.exception.DomainException
-import dev.emmanuel.wallet.customers.application.gateway.IdentityProviderCreator
+import dev.emmanuel.wallet.customers.application.gateway.CreateIdentityProvider
 import dev.emmanuel.wallet.customers.application.gateway.CreateIdentityProviderRequest
 import dev.emmanuel.wallet.customers.application.repository.CustomerRepository
 import dev.emmanuel.wallet.customers.domain.entity.Customer
@@ -20,7 +20,7 @@ data class SignUpRequest(
 @TransactionalUseCase
 class SignUp(
     private val repository: CustomerRepository,
-    private val identityProviderCreator: IdentityProviderCreator,
+    private val createIdentityProvider: CreateIdentityProvider,
     private val transactionalEventPublisher: TransactionalEventPublisher
 ) {
     private val logger = KotlinLogging.logger {  }
@@ -47,7 +47,7 @@ class SignUp(
             password = request.password
         )
 
-        identityProviderCreator.create(createIdentityRequest)
+        createIdentityProvider.create(createIdentityRequest)
     }
 
     private fun validateEmailUniqueness(request: SignUpRequest) {

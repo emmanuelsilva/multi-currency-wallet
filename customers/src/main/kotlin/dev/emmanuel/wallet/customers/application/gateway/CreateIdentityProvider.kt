@@ -8,7 +8,7 @@ data class CreateIdentityProviderRequest(
     val password: Password
 )
 
-interface IdentityProviderCreator {
+interface CreateIdentityProvider {
 
     fun create(request: CreateIdentityProviderRequest)
 }
